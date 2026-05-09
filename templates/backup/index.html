@@ -1,0 +1,141 @@
+{% extends "base.html" %}
+{% block title %}Backup & Restore — NETSIBLE{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>Backup & Restore</h1>
+    <div>
+        <button class="btn-netsible btn-primary-n" data-bs-toggle="modal" data-bs-target="#backupNowModal">
+            <i class="bi bi-cloud-download"></i> Backup Now
+        </button>
+    </div>
+</div>
+
+<div class="card p-0 mb-4">
+    <table class="table-netsible">
+        <thead>
+            <tr>
+                <th>Device Name</th>
+                <th>File Name</th>
+                <th>Date</th>
+                <th>Size</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for backup in backups %}
+            <tr>
+                <td><strong>{{ backup.device_name }}</strong></td>
+                <td>{{ backup.filename }}</td>
+                <td>{{ backup.date }}</td>
+                <td>{{ backup.size }}</td>
+                <td>
+                    <span class="badge-status badge-online">{{ backup.status }}</span>
+                </td>
+                <td style="white-space: nowrap;">
+                    <!-- Download -->
+                    <a href="{{ url_for('backup.download_backup', backup_id=backup.id) }}" class="btn-netsible btn-primary-n btn-icon btn-sm" title="Download">
+                        <i class="bi bi-download"></i>
+                    </a>
+                    <!-- Restore -->
+                    <form action="{{ url_for('backup.restore_backup', backup_id=backup.id) }}" method="POST" style="display:inline;">
+                        <button type="submit" class="btn-netsible btn-success-n btn-icon btn-sm" title="Restore to Device" onclick="return confirm('Apakah Anda yakin ingin me-restore konfigurasi ini ke {{ backup.device_name }}?');">
+                            <i class="bi bi-arrow-counterclockwise"></i>
+                        </button>
+                    </form>
+                    <!-- Schedule -->
+                    <button class="btn-netsible text-white btn-icon btn-sm" style="background-color: #f39c12; border: none;" title="Jadwal Backup Rutin" data-bs-toggle="modal" data-bs-target="#scheduleModal{{ backup.id }}">
+                        <i class="bi bi-calendar-event"></i>
+                    </button>
+                    <!-- Delete -->
+                    <form action="{{ url_for('backup.delete_backup', backup_id=backup.id) }}" method="POST" style="display:inline;">
+                        <button type="submit" class="btn-netsible btn-danger-n btn-icon btn-sm" title="Delete Backup" onclick="return confirm('Hapus file backup {{ backup.filename }}?');">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </form>
+                </td>
+            </tr>
+
+            <!-- Schedule Modal -->
+            <div class="modal fade" id="scheduleModal{{ backup.id }}" tabindex="-1" aria-labelledby="scheduleModalLabel{{ backup.id }}" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title fw-bold" id="scheduleModalLabel{{ backup.id }}">Jadwal Backup: {{ backup.device_name }}</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <form action="{{ url_for('backup.schedule_backup', device_name=backup.device_name) }}" method="POST">
+                            <div class="modal-body px-4 pb-2">
+                                <div class="d-flex justify-content-between align-items-center mb-4">
+                                    <label class="form-label-n text-dark fw-normal mb-0" style="font-size: 15px;">Enable Schedule</label>
+                                    <div class="form-check form-switch m-0 p-0" style="display: flex; align-items: center;">
+                                        <input class="form-check-input" type="checkbox" role="switch" name="enable_schedule" checked style="margin: 0; background-color: #000; border-color: #000; width: 38px; height: 20px; cursor: pointer; box-shadow: none;">
+                                    </div>
+                                </div>
+                                <div class="d-flex align-items-center mb-3">
+                                    <label class="form-label-n text-dark fw-normal mb-0" style="width: 70px; font-size: 15px;">Interval</label>
+                                    <span class="me-3 fw-bold" style="font-size: 15px;">:</span>
+                                    <select class="form-input-n py-2" name="interval" style="font-size: 14px; background: #fff; cursor: pointer; flex: 1;">
+                                        <option value="Setiap 1 hari">Setiap 1 hari</option>
+                                        <option value="Setiap 3 hari">Setiap 3 hari</option>
+                                        <option value="Setiap 7 hari" selected>Setiap 7 hari</option>
+                                        <option value="Setiap bulan">Setiap bulan</option>
+                                    </select>
+                                </div>
+                                <div class="d-flex align-items-center mb-3">
+                                    <label class="form-label-n text-dark fw-normal mb-0" style="width: 70px; font-size: 15px;">Waktu</label>
+                                    <span class="me-3 fw-bold" style="font-size: 15px;">:</span>
+                                    <input type="time" class="form-input-n py-2" name="time" value="02:00" style="font-size: 14px; background: #fff; cursor: pointer; flex: 1;">
+                                </div>
+                            </div>
+                            <div class="modal-footer border-0 justify-content-center pt-0 pb-4">
+                                <button type="submit" class="btn-netsible btn-success-n fw-bold text-white" style="border-radius: 6px; background-color: #3fce3f; border: none; padding: 8px 24px; font-size: 13px;">
+                                    Simpan Jadwal
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+            {% if not backups %}
+            <tr>
+                <td colspan="6" class="text-center py-4 text-muted">No backups found.</td>
+            </tr>
+            {% endif %}
+        </tbody>
+    </table>
+</div>
+
+<!-- Backup Now Modal -->
+<div class="modal fade" id="backupNowModal" tabindex="-1" aria-labelledby="backupNowModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title fw-bold" id="backupNowModalLabel">Jalankan Backup</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="{{ url_for('backup.run_backup') }}" method="POST">
+                <div class="modal-body px-4">
+                    <div class="mb-3">
+                        <label class="form-label-n text-dark fw-normal mb-2" style="font-size: 15px;">Pilih Perangkat</label>
+                        <select class="form-input-n py-2" name="device" required style="font-size: 14px; background: #fff; cursor: pointer;">
+                            <option value="">-- Pilih Perangkat --</option>
+                            {% for dev in devices %}
+                            <option value="{{ dev }}">{{ dev }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-netsible btn-secondary-n" data-bs-dismiss="modal">Batal</button>
+                    <button type="submit" class="btn-netsible btn-primary-n" style="background-color: #3b7dad; border: none;">
+                        <i class="bi bi-cloud-arrow-up-fill"></i> Backup Sekarang
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

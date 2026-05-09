@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="NETSIBLE — Network Management & Automation Platform">
+    <title>{% block title %}NETSIBLE{% endblock %}</title>
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    {% block extra_css %}{% endblock %}
+</head>
+
+<body>
+    <!-- Topbar -->
+    <header class="topbar">
+        <div class="topbar-brand">
+            <button class="hamburger" id="hamburger-btn" aria-label="Toggle menu">
+                <i class="bi bi-list"></i>
+            </button>
+            <span class="logo-text">⬡ NETSIBLE</span>
+        </div>
+        <div class="topbar-search">
+            <i class="bi bi-search search-icon"></i>
+            <input type="text" placeholder="Cari perangkat, IP, atau menu..." id="global-search">
+        </div>
+        <div class="topbar-actions">
+            <a href="{{ url_for('auth.profile') }}" style="text-decoration: none;">
+                <div class="user-avatar" title="{{ current_user.username if current_user.is_authenticated else 'User' }}">
+                    <i class="bi bi-person-fill"></i>
+                </div>
+            </a>
+            {% if current_user.is_authenticated %}
+            <a href="{{ url_for('auth.logout') }}" style="color:#fff;font-size:14px;font-weight:500;" title="Logout">
+                <i class="bi bi-box-arrow-right"></i>
+            </a>
+            {% endif %}
+        </div>
+    </header>
+
+    <!-- Sidebar Overlay -->
+    <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+    <!-- Sidebar -->
+    <nav class="sidebar" id="sidebar">
+        <ul class="sidebar-nav">
+            <li><a href="{{ url_for('dashboard.index') }}"><i class="bi bi-speedometer2"></i> Dashboard</a></li>
+            <li><a href="{{ url_for('devices.device_list') }}"><i class="bi bi-hdd-rack"></i> Daftar Perangkat</a></li>
+            <!-- <li><a href="{{ url_for('monitoring.detail', device_id=1) }}"><i class="bi bi-graph-up"></i> Monitoring</a></li> -->
+            <li><a href="{{ url_for('monitoring.interface_view', device_id=1) }}"><i class="bi bi-ethernet"></i>
+                    Tampilan Interface</a></li>
+            <li><a href="{{ url_for('network_map.index') }}"><i class="bi bi-diagram-3"></i> Visualisasi Jaringan</a>
+            </li>
+            <li><a href="{{ url_for('backup.index') }}"><i class="bi bi-cloud-arrow-up"></i> Backup & Restore</a></li>
+        </ul>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        {% for category, message in messages %}
+        <div class="alert-netsible alert-{{ category }}">
+            <i class="bi bi-info-circle"></i> {{ message }}
+        </div>
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
+
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+
+</html>

@@ -1,0 +1,39 @@
+<!-- Add Device Modal -->
+<div class="modal fade" id="addDeviceModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Tambah Perangkat</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="add-device-form">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label class="form-label-n" for="dev-name">Device Name</label>
+                        <input class="form-input-n" id="dev-name" required placeholder="Router-Office">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label-n" for="dev-ip">IP Address</label>
+                        <input class="form-input-n" id="dev-ip" required placeholder="192.168.88.1">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label-n" for="dev-interface">Interface</label>
+                        <input class="form-input-n" id="dev-interface" placeholder="ether1" value="ether1">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label-n" for="dev-model">Model</label>
+                        <input class="form-input-n" id="dev-model" placeholder="RB750GR3">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label-n" for="dev-serial">Serial Number</label>
+                        <input class="form-input-n" id="dev-serial" placeholder="HBW08RLT3V0">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-netsible btn-secondary-n btn-sm" data-bs-dismiss="modal">Batal</button>
+                    <button type="submit" class="btn-netsible btn-success-n btn-sm">Simpan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

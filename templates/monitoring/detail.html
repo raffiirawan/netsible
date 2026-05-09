@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+{% block title %}Monitoring — {{ device.name }} — NETSIBLE{% endblock %}
+
+{% block content %}
+<div id="monitoring-container" data-device-id="{{ device.id }}">
+    <div class="page-header">
+        <h1>Monitoring & Detail Real-time Data</h1>
+        <div class="time-selector">
+            <select>
+                <option>5 Minutes</option>
+                <option>15 Minutes</option>
+                <option>1 Hour</option>
+                <option>24 Hours</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- Interface Traffic Table -->
+    <table class="table-netsible mb-4">
+        <thead>
+            <tr>
+                <th>Interface</th>
+                <th>Tx Rate</th>
+                <th>Rx Rate</th>
+                <th>Tx Bytes</th>
+                <th>Rx Bytes</th>
+            </tr>
+        </thead>
+        <tbody id="intf-table-body">
+            <tr><td colspan="5" style="text-align:center;color:var(--text-muted)">Memuat data...</td></tr>
+        </tbody>
+    </table>
+
+    <!-- Info Bar -->
+    <div class="info-bar">
+        <span><i class="bi bi-clock"></i> Uptime: <strong id="mon-uptime">—</strong></span>
+        <span><i class="bi bi-cpu"></i> RouterOS: <strong id="mon-ros">—</strong></span>
+        <span><i class="bi bi-motherboard"></i> Model: <strong id="mon-model">—</strong></span>
+    </div>
+
+    <!-- Hardware Status Cards -->
+    <div class="row g-4 mb-3">
+        <div class="col-md-4">
+            <div class="card hw-card">
+                <div class="hw-label">CPU Load</div>
+                <div class="hw-value" id="mon-cpu">—</div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card hw-card">
+                <div class="hw-label">Memory Usage</div>
+                <div class="hw-value" id="mon-mem">—</div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card hw-card">
+                <div class="hw-label">Temperature</div>
+                <div class="hw-value" id="mon-temp">—</div>
+            </div>
+        </div>
+    </div>
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="card hw-card">
+                <div class="hw-label">Disk Space</div>
+                <div class="hw-value" id="mon-disk">—</div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card hw-card">
+                <div class="hw-label">Total User</div>
+                <div class="hw-value" id="mon-users">—</div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card hw-card">
+                <div class="hw-label">Active Connections</div>
+                <div class="hw-value" id="mon-conn">—</div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/monitoring.js') }}"></script>
+{% endblock %}

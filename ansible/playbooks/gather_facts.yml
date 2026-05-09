@@ -1,0 +1,21 @@
+---
+# NETSIBLE — Gather facts from Mikrotik routers
+- name: Gather Mikrotik Router Facts
+  hosts: mikrotik_routers
+  gather_facts: false
+  tasks:
+    - name: Get system resource info
+      community.routeros.command:
+        commands:
+          - /system resource print
+      register: resource_output
+
+    - name: Get interface list
+      community.routeros.command:
+        commands:
+          - /interface print
+      register: interface_output
+
+    - name: Display results
+      debug:
+        msg: "{{ resource_output.stdout_lines }}"

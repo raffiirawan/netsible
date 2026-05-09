@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% block title %}Tampilan Interface — {{ device.name }} — NETSIBLE{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>Tampilan Interface</h1>
+</div>
+
+<div class="router-visual">
+    <h3>MIKROTIK {{ device.model or 'RB750GR3' }}</h3>
+
+    <div class="router-chassis" id="router-chassis" data-device-id="{{ device.id }}">
+        <!-- WAN Port -->
+        <div class="port-group">
+            <div class="port port-connected" id="port-wan">
+                <div class="port-slot"></div>
+                <div class="port-label">WAN</div>
+            </div>
+        </div>
+        <!-- Ethernet Ports -->
+        <div class="port-group">
+            <div class="port port-connected" id="port-ether1">
+                <div class="port-slot"></div>
+                <div class="port-label">Ether1</div>
+            </div>
+            <div class="port port-connected" id="port-ether2">
+                <div class="port-slot"></div>
+                <div class="port-label">Ether2</div>
+            </div>
+            <div class="port port-disabled" id="port-ether3">
+                <div class="port-slot"></div>
+                <div class="port-label">Ether3</div>
+            </div>
+            <div class="port port-disconnected" id="port-ether4">
+                <div class="port-slot"></div>
+                <div class="port-label">Ether4</div>
+            </div>
+            <div class="port port-disconnected" id="port-ether5">
+                <div class="port-slot"></div>
+                <div class="port-label">Ether5</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Legend -->
+    <div class="port-legend">
+        <span><div class="legend-dot connected"></div> Connected</span>
+        <span><div class="legend-dot disabled"></div> Disabled</span>
+        <span><div class="legend-dot disconnected"></div> Disconnected</span>
+    </div>
+
+    <!-- Refresh Button -->
+    <div style="margin-top:28px">
+        <button class="btn-netsible btn-secondary-n" id="btn-refresh-ports">
+            <i class="bi bi-arrow-clockwise"></i> Refresh
+        </button>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/interface.js') }}"></script>
+{% endblock %}

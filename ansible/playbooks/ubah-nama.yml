@@ -1,0 +1,10 @@
+---
+- name: Otomasi Konfigurasi Dasar Mikrotik
+  hosts: routers
+  gather_facts: false
+
+  tasks:
+   - name: Ubah nama router sesuai IP
+     routeros_command:
+       commands:
+        - /system identity set name="Router-{{ inventory_hostname }}"
