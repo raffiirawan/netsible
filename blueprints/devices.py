@@ -1,6 +1,7 @@
 from flask import Blueprint, render_template, request, jsonify
 from flask_login import login_required
 from models.device import Device
+from models.ip_address import IPAddress
 from extensions import db
 
 devices_bp = Blueprint('devices', __name__, url_prefix='/devices')
