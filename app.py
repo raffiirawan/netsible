@@ -60,12 +60,12 @@ def _seed_demo_data(app):
 
     # Demo devices
     devices_data = [
-        {'name': 'Router-GW', 'ip_address': '192.168.88.1', 'interface': 'ether1',
-         'model': 'RB750GR3', 'serial_number': 'HBW08RLT3V0',
+        {'name': 'Mikrotik 1', 'ip_address': '192.168.100.1', 'interface': 'ether1',
+         'model': 'CHRv7', 'serial_number': 'HBW08RLT3V0',
          'mac_address': 'E4:8D:8C:26:A0:01', 'routeros_version': '7.15.2',
          'status': 'online', 'uptime': '10d 4h 30m'},
-        {'name': 'Router-Branch1', 'ip_address': '192.168.88.10', 'interface': 'ether1',
-         'model': 'RB941-2nD', 'serial_number': 'CC3D0BFE1234',
+        {'name': 'Mikrotik 2', 'ip_address': '192.168.100.2', 'interface': 'ether1',
+         'model': 'CHRv8', 'serial_number': 'CC3D0BFE1234',
          'mac_address': 'E4:8D:8C:26:B0:02', 'routeros_version': '7.14.3',
          'status': 'online', 'uptime': '5d 12h 15m'},
         {'name': 'Router-Branch2', 'ip_address': '192.168.88.3', 'interface': 'ether1',
@@ -91,16 +91,16 @@ def _seed_demo_data(app):
 
     # Demo IP addresses
     ips_data = [
-        {'address': '192.168.88.1/24', 'network': '192.168.88.0', 'interface': 'ether1',
+        {'address': '192.168.100.1/24', 'network': '192.168.100.0', 'interface': 'ether1',
          'setting': 'Static', 'device_id': devices[0].id},
         {'address': '10.10.10.1/30', 'network': '10.10.10.0', 'interface': 'ether2',
          'setting': 'Static', 'device_id': devices[0].id},
-        {'address': '192.168.88.10/24', 'network': '192.168.88.0', 'interface': 'ether1',
+        {'address': '192.168.100.2/24', 'network': '192.168.100.0', 'interface': 'ether1',
          'setting': 'DHCP', 'device_id': devices[1].id},
-        {'address': '192.168.100.1/24', 'network': '192.168.100.0', 'interface': 'ether1',
-         'setting': 'Static', 'device_id': devices[3].id},
-        {'address': '172.16.0.1/16', 'network': '172.16.0.0', 'interface': 'ether3',
-         'setting': 'Static', 'device_id': devices[0].id},
+        # {'address': '192.168.100.1/24', 'network': '192.168.100.0', 'interface': 'ether1',
+        #  'setting': 'Static', 'device_id': devices[3].id},
+        # {'address': '172.16.0.1/16', 'network': '172.16.0.0', 'interface': 'ether3',
+        #  'setting': 'Static', 'device_id': devices[0].id},
     ]
     for ip in ips_data:
         db.session.add(IPAddress(**ip))
