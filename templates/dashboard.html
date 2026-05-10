@@ -28,8 +28,52 @@
     </div>
 </div>
 
-<!-- IP Management -->
+<!-- Device Management -->
 <div class="page-header">
+    <h1 style="font-size:20px">Daftar Perangkat</h1>
+    <button class="btn-netsible btn-primary-n btn-sm" data-bs-toggle="modal" data-bs-target="#addDeviceModal">
+        <i class="bi bi-plus-lg"></i> Tambah Perangkat
+    </button>
+</div>
+
+<table class="table-netsible">
+    <thead>
+        <tr>
+            <th>Device Name</th>
+            <th>IP Address</th>
+            <th>Interface</th>
+            <th>Status</th>
+            <th>Aksi</th>
+        </tr>
+    </thead>
+    <tbody id="device-table-body">
+        {% for device in devices %}
+        <tr>
+            <td>
+                <button class="btn-detail" data-id="{{ device.id }}" style="background:none;border:none;color:var(--color-primary);font-weight:600;cursor:pointer">
+                    {{ device.name }}
+                </button>
+            </td>
+            <td>{{ device.ip_address }}</td>
+            <td>{{ device.interface }}</td>
+            <td>
+                <span class="badge-status badge-{{ device.status }}">{{ device.status | capitalize }}</span>
+            </td>
+            <td>
+                <button class="btn-netsible btn-primary-n btn-icon btn-sm btn-edit-device" data-id="{{ device.id }}">
+                    <i class="bi bi-pencil-square"></i>
+                </button>
+                <button class="btn-netsible btn-danger-n btn-icon btn-sm btn-delete-device" data-id="{{ device.id }}">
+                    <i class="bi bi-trash"></i>
+                </button>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<!-- IP Management -->
+<div class="page-header" style="margin-top: 40px;">
     <h1 style="font-size:20px">Manajemen IP</h1>
     <!-- <button class="btn-netsible btn-primary-n btn-sm" data-bs-toggle="modal" data-bs-target="#addIpModal">
         <i class="bi bi-plus-lg"></i> Tambah IP
@@ -62,6 +106,102 @@
         {% endfor %}
     </tbody>
 </table>
+
+<!-- Add Device Modal -->
+<div class="modal fade" id="addDeviceModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Tambah Perangkat</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="add-device-form">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label class="form-label-n" for="dev-name">Device Name</label>
+                        <input class="form-input-n" id="dev-name" required placeholder="Router-Office">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label-n" for="dev-ip">IP Address</label>
+                        <input class="form-input-n" id="dev-ip" required placeholder="192.168.88.1">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label-n" for="dev-interface">Interface</label>
+                        <input class="form-input-n" id="dev-interface" placeholder="ether1" value="ether1">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label-n" for="dev-model">Model</label>
+                        <input class="form-input-n" id="dev-model" placeholder="RB750GR3">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label-n" for="dev-serial">Serial Number</label>
+                        <input class="form-input-n" id="dev-serial" placeholder="HBW08RLT3V0">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-netsible btn-secondary-n btn-sm" data-bs-dismiss="modal">Batal</button>
+                    <button type="submit" class="btn-netsible btn-success-n btn-sm">Simpan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Device Modal -->
+<div class="modal fade" id="editDeviceModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Edit Perangkat</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="edit-device-form">
+                <input type="hidden" id="edit-dev-id">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label class="form-label-n" for="edit-dev-name">Device Name</label>
+                        <input class="form-input-n" id="edit-dev-name" required placeholder="Router-Office">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label-n" for="edit-dev-ip">IP Address</label>
+                        <input class="form-input-n" id="edit-dev-ip" required placeholder="192.168.88.1">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label-n" for="edit-dev-interface">Interface</label>
+                        <input class="form-input-n" id="edit-dev-interface" placeholder="ether1">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label-n" for="edit-dev-model">Model</label>
+                        <input class="form-input-n" id="edit-dev-model" placeholder="RB750GR3">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label-n" for="edit-dev-serial">Serial Number</label>
+                        <input class="form-input-n" id="edit-dev-serial" placeholder="HBW08RLT3V0">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label-n" for="edit-dev-mac">MAC Address</label>
+                        <input class="form-input-n" id="edit-dev-mac" placeholder="E4:8D:8C:26:A0:01">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label-n" for="edit-dev-version">RouterOS Version</label>
+                        <input class="form-input-n" id="edit-dev-version" placeholder="7.15.2">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label-n" for="edit-dev-status">Status</label>
+                        <select class="form-input-n" id="edit-dev-status">
+                            <option value="online">Online</option>
+                            <option value="offline">Offline</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-netsible btn-secondary-n btn-sm" data-bs-dismiss="modal">Batal</button>
+                    <button type="submit" class="btn-netsible btn-success-n btn-sm">Update</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 
 <!-- Add IP Modal -->
 <div class="modal fade" id="addIpModal" tabindex="-1">

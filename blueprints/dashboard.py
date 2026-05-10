@@ -10,16 +10,18 @@ dashboard_bp = Blueprint('dashboard', __name__, url_prefix='')
 @dashboard_bp.route('/')
 @login_required
 def index():
-    """Main dashboard with summary cards and IP management."""
+    """Main dashboard with summary cards, device management, and IP management."""
     total_devices = Device.query.count()
     online_devices = Device.query.filter_by(status='online').count()
     error_devices = Device.query.filter_by(status='offline').count()
+    devices = Device.query.order_by(Device.created_at.desc()).all()
     ip_addresses = IPAddress.query.all()
 
     return render_template('dashboard.html',
                            total_devices=total_devices,
                            online_devices=online_devices,
                            error_devices=error_devices,
+                           devices=devices,
                            ip_addresses=ip_addresses)
 
 
