@@ -9,9 +9,10 @@ devices_bp = Blueprint('devices', __name__, url_prefix='/devices')
 @devices_bp.route('/')
 @login_required
 def device_list():
-    """List all devices."""
-    devices = Device.query.order_by(Device.created_at.desc()).all()
-    return render_template('devices/list.html', devices=devices)
+    """IP Address Management page."""
+    ip_addresses = IPAddress.query.all()
+    devices = Device.query.order_by(Device.name).all()
+    return render_template('devices/list.html', ip_addresses=ip_addresses, devices=devices)
 
 
 @devices_bp.route('/', methods=['POST'])

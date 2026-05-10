@@ -1,39 +1,44 @@
 {% extends "base.html" %}
-{% block title %}Daftar Perangkat — NETSIBLE{% endblock %}
+{% block title %}Manajemen IP — NETSIBLE{% endblock %}
 
 {% block content %}
 <div class="page-header">
-    <h1>Daftar Perangkat</h1>
-    <button class="btn-netsible btn-primary-n" data-bs-toggle="modal" data-bs-target="#addDeviceModal">
-        <i class="bi bi-plus-lg"></i> Tambah Perangkat
+    <h1>Manajemen IP Address</h1>
+    <button class="btn-netsible btn-primary-n" data-bs-toggle="modal" data-bs-target="#addIpModal">
+        <i class="bi bi-plus-lg"></i> Tambah IP
     </button>
 </div>
 
 <table class="table-netsible">
     <thead>
         <tr>
-            <th>Device Name</th>
-            <th>IP Address</th>
+            <th>Alamat IP</th>
+            <th>Network</th>
             <th>Interface</th>
-            <th>Status</th>
+            <th>Setting</th>
+            <th>Device</th>
             <th>Aksi</th>
         </tr>
     </thead>
-    <tbody id="device-table-body">
-        {% for device in devices %}
+    <tbody id="ip-table-body">
+        {% for ip in ip_addresses %}
         <tr>
+            <td><strong>{{ ip.address }}</strong></td>
+            <td>{{ ip.network }}</td>
+            <td><span class="badge-status badge-online">{{ ip.interface }}</span></td>
+            <td>{{ ip.setting }}</td>
             <td>
-                <button class="btn-detail" data-id="{{ device.id }}" style="background:none;border:none;color:var(--color-primary);font-weight:600;cursor:pointer">
-                    {{ device.name }}
+                {% if ip.device %}
+                    {{ ip.device.name }}
+                {% else %}
+                    <span style="color: #999;">-</span>
+                {% endif %}
+            </td>
+            <td>
+                <button class="btn-netsible btn-primary-n btn-icon btn-sm btn-edit-ip" data-id="{{ ip.id }}">
+                    <i class="bi bi-pencil-square"></i>
                 </button>
-            </td>
-            <td>{{ device.ip_address }}</td>
-            <td>{{ device.interface }}</td>
-            <td>
-                <span class="badge-status badge-{{ device.status }}">{{ device.status | capitalize }}</span>
-            </td>
-            <td>
-                <button class="btn-netsible btn-danger-n btn-icon btn-sm btn-delete-device" data-id="{{ device.id }}">
+                <button class="btn-netsible btn-danger-n btn-icon btn-sm btn-delete-ip" data-id="{{ ip.id }}">
                     <i class="bi bi-trash"></i>
                 </button>
             </td>
@@ -42,7 +47,104 @@
     </tbody>
 </table>
 
-{% include "devices/_add_modal.html" %}
+<!-- Add IP Modal -->
+<div class="modal fade" id="addIpModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Tambah IP Address</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="add-ip-form">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label class="form-label-n" for="ip-address">Alamat IP</label>
+                        <input class="form-input-n" id="ip-address" required placeholder="192.168.88.1/24">
+                        <small style="color: #999;">Format: IP/CIDR (contoh: 192.168.88.1/24)</small>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label-n" for="ip-network">Network</label>
+                        <input class="form-input-n" id="ip-network" placeholder="192.168.88.0">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label-n" for="ip-interface">Interface</label>
+                        <input class="form-input-n" id="ip-interface" placeholder="ether1" value="ether1">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label-n" for="ip-setting">Setting</label>
+                        <select class="form-input-n" id="ip-setting">
+                            <option value="Static">Static</option>
+                            <option value="DHCP">DHCP</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label-n" for="ip-device">Device (Opsional)</label>
+                        <select class="form-input-n" id="ip-device">
+                            <option value="">-- Pilih Device --</option>
+                            {% for device in devices %}
+                            <option value="{{ device.id }}">{{ device.name }} ({{ device.ip_address }})</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-netsible btn-secondary-n btn-sm" data-bs-dismiss="modal">Batal</button>
+                    <button type="submit" class="btn-netsible btn-success-n btn-sm">Simpan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Edit IP Modal -->
+<div class="modal fade" id="editIpModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Edit IP Address</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="edit-ip-form">
+                <input type="hidden" id="edit-ip-id">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label class="form-label-n" for="edit-ip-address">Alamat IP</label>
+                        <input class="form-input-n" id="edit-ip-address" required placeholder="192.168.88.1/24">
+                        <small style="color: #999;">Format: IP/CIDR (contoh: 192.168.88.1/24)</small>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label-n" for="edit-ip-network">Network</label>
+                        <input class="form-input-n" id="edit-ip-network" placeholder="192.168.88.0">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label-n" for="edit-ip-interface">Interface</label>
+                        <input class="form-input-n" id="edit-ip-interface" placeholder="ether1">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label-n" for="edit-ip-setting">Setting</label>
+                        <select class="form-input-n" id="edit-ip-setting">
+                            <option value="Static">Static</option>
+                            <option value="DHCP">DHCP</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label-n" for="edit-ip-device">Device (Opsional)</label>
+                        <select class="form-input-n" id="edit-ip-device">
+                            <option value="">-- Pilih Device --</option>
+                            {% for device in devices %}
+                            <option value="{{ device.id }}">{{ device.name }} ({{ device.ip_address }})</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-netsible btn-secondary-n btn-sm" data-bs-dismiss="modal">Batal</button>
+                    <button type="submit" class="btn-netsible btn-success-n btn-sm">Update</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 {% endblock %}
 
 {% block extra_js %}

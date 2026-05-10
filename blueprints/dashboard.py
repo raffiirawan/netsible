@@ -27,6 +27,14 @@ def index():
 
 # ----- IP Address CRUD API -----
 
+@dashboard_bp.route('/api/ip/<int:ip_id>', methods=['GET'])
+@login_required
+def get_ip(ip_id):
+    """Get single IP address detail (JSON)."""
+    ip = IPAddress.query.get_or_404(ip_id)
+    return jsonify(ip.to_dict())
+
+
 @dashboard_bp.route('/api/ip', methods=['POST'])
 @login_required
 def add_ip():

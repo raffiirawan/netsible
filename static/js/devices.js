@@ -1,68 +1,95 @@
 /**
- * NETSIBLE — Devices JavaScript
- * Add device modal, detail expand/collapse, delete
+ * NETSIBLE — IP Management JavaScript
+ * IP Address CRUD operations
  */
 document.addEventListener('DOMContentLoaded', () => {
-    // Add device form
-    const addForm = document.getElementById('add-device-form');
-    if (addForm) {
-        addForm.addEventListener('submit', async (e) => {
+    // ========== IP ADDRESS MANAGEMENT ==========
+    
+    // Add IP form
+    const addIpForm = document.getElementById('add-ip-form');
+    if (addIpForm) {
+        addIpForm.addEventListener('submit', async (e) => {
             e.preventDefault();
+            const deviceId = document.getElementById('ip-device').value;
             const data = {
-                name: document.getElementById('dev-name').value,
-                ip_address: document.getElementById('dev-ip').value,
-                interface: document.getElementById('dev-interface').value,
-                model: document.getElementById('dev-model').value,
-                serial_number: document.getElementById('dev-serial').value,
+                address: document.getElementById('ip-address').value,
+                network: document.getElementById('ip-network').value,
+                interface: document.getElementById('ip-interface').value,
+                setting: document.getElementById('ip-setting').value,
+                device_id: deviceId ? parseInt(deviceId) : null,
             };
             try {
-                await apiFetch('/devices/', { method: 'POST', body: JSON.stringify(data) });
+                await apiFetch('/api/ip', {
+                    method: 'POST', 
+                    body: JSON.stringify(data)
+                });
                 location.reload();
-            } catch (err) { alert('Gagal: ' + err.message); }
+            } catch (err) { 
+                alert('Gagal menambahkan IP: ' + err.message); 
+            }
         });
     }
 
-    // Expand detail
-    document.querySelectorAll('.btn-detail').forEach(btn => {
+    // Edit IP button - load data into modal
+    document.querySelectorAll('.btn-edit-ip').forEach(btn => {
         btn.addEventListener('click', async () => {
             const id = btn.dataset.id;
-            const row = btn.closest('tr');
-            const existing = row.nextElementSibling;
-            if (existing && existing.classList.contains('detail-row')) {
-                existing.remove(); return;
-            }
             try {
-                const d = await apiFetch(`/devices/${id}`);
-                const detailTr = document.createElement('tr');
-                detailTr.classList.add('detail-row');
-                detailTr.innerHTML = `<td colspan="5">
-                    <div class="detail-card">
-                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
-                            <div><strong>Model:</strong> ${d.model}</div>
-                            <div><strong>RouterOS:</strong> ${d.routeros_version}</div>
-                            <div><strong>IP Address:</strong> ${d.ip_address}</div>
-                            <div><strong>Serial Number:</strong> ${d.serial_number}</div>
-                            <div><strong>MAC Address:</strong> ${d.mac_address}</div>
-                            <div><strong>Uptime:</strong> ${d.uptime || '-'}</div>
-                        </div>
-                        <div style="margin-top:16px;display:flex;gap:8px">
-                            <a href="/monitoring/${d.id}" class="btn-netsible btn-secondary-n btn-sm">Monitoring</a>
-                            <a href="/monitoring/${d.id}/interface" class="btn-netsible btn-primary-n btn-sm">Interface</a>
-                        </div>
-                    </div></td>`;
-                row.after(detailTr);
-            } catch (err) { alert('Gagal memuat detail'); }
+                const ip = await apiFetch(`/api/ip/${id}`);
+                
+                // Populate edit form
+                document.getElementById('edit-ip-id').value = ip.id;
+                document.getElementById('edit-ip-address').value = ip.address;
+                document.getElementById('edit-ip-network').value = ip.network || '';
+                document.getElementById('edit-ip-interface').value = ip.interface || '';
+                document.getElementById('edit-ip-setting').value = ip.setting || 'Static';
+                document.getElementById('edit-ip-device').value = ip.device_id || '';
+                
+                // Show modal
+                const editModal = new bootstrap.Modal(document.getElementById('editIpModal'));
+                editModal.show();
+            } catch (err) { 
+                alert('Gagal memuat data IP: ' + err.message); 
+            }
         });
     });
 
-    // Delete device
-    document.querySelectorAll('.btn-delete-device').forEach(btn => {
-        btn.addEventListener('click', async () => {
-            if (!confirm('Hapus perangkat ini?')) return;
+    // Edit IP form submit
+    const editIpForm = document.getElementById('edit-ip-form');
+    if (editIpForm) {
+        editIpForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const id = document.getElementById('edit-ip-id').value;
+            const deviceId = document.getElementById('edit-ip-device').value;
+            const data = {
+                address: document.getElementById('edit-ip-address').value,
+                network: document.getElementById('edit-ip-network').value,
+                interface: document.getElementById('edit-ip-interface').value,
+                setting: document.getElementById('edit-ip-setting').value,
+                device_id: deviceId ? parseInt(deviceId) : null,
+            };
             try {
-                await apiFetch(`/devices/${btn.dataset.id}`, { method: 'DELETE' });
+                await apiFetch(`/api/ip/${id}`, { 
+                    method: 'PUT', 
+                    body: JSON.stringify(data) 
+                });
                 location.reload();
-            } catch (err) { alert('Gagal menghapus'); }
+            } catch (err) { 
+                alert('Gagal mengupdate IP: ' + err.message); 
+            }
+        });
+    }
+
+    // Delete IP
+    document.querySelectorAll('.btn-delete-ip').forEach(btn => {
+        btn.addEventListener('click', async () => {
+            if (!confirm('Hapus IP address ini?')) return;
+            try {
+                await apiFetch(`/api/ip/${btn.dataset.id}`, { method: 'DELETE' });
+                btn.closest('tr').remove();
+            } catch (err) { 
+                alert('Gagal menghapus IP: ' + err.message); 
+            }
         });
     });
 });

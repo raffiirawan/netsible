@@ -72,41 +72,6 @@
     </tbody>
 </table>
 
-<!-- IP Management -->
-<div class="page-header" style="margin-top: 40px;">
-    <h1 style="font-size:20px">Manajemen IP</h1>
-    <!-- <button class="btn-netsible btn-primary-n btn-sm" data-bs-toggle="modal" data-bs-target="#addIpModal">
-        <i class="bi bi-plus-lg"></i> Tambah IP
-    </button> -->
-</div>
-
-<table class="table-netsible">
-    <thead>
-        <tr>
-            <th>Alamat IP</th>
-            <th>IP Network</th>
-            <th>Interfaces</th>
-            <th>Setting</th>
-            <th>Aksi</th>
-        </tr>
-    </thead>
-    <tbody id="ip-table-body">
-        {% for ip in ip_addresses %}
-        <tr>
-            <td>{{ ip.address }}</td>
-            <td>{{ ip.network }}</td>
-            <td>{{ ip.interface }}</td>
-            <td>{{ ip.setting }}</td>
-            <td>
-                <button class="btn-netsible btn-danger-n btn-icon btn-sm btn-delete-ip" data-id="{{ ip.id }}">
-                    <i class="bi bi-trash"></i>
-                </button>
-            </td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
-
 <!-- Add Device Modal -->
 <div class="modal fade" id="addDeviceModal" tabindex="-1">
     <div class="modal-dialog">
@@ -197,43 +162,6 @@
                 <div class="modal-footer">
                     <button type="button" class="btn-netsible btn-secondary-n btn-sm" data-bs-dismiss="modal">Batal</button>
                     <button type="submit" class="btn-netsible btn-success-n btn-sm">Update</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-
-<!-- Add IP Modal -->
-<div class="modal fade" id="addIpModal" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Tambah IP Address</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <form id="add-ip-form">
-                <div class="modal-body">
-                    <div class="form-group">
-                        <label class="form-label-n">Alamat IP</label>
-                        <input class="form-input-n" id="ip-address" required placeholder="192.168.88.1/24">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label-n">IP Network</label>
-                        <input class="form-input-n" id="ip-network" placeholder="192.168.88.0">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label-n">Interface</label>
-                        <input class="form-input-n" id="ip-interface" placeholder="ether1">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label-n">Setting</label>
-                        <input class="form-input-n" id="ip-setting" placeholder="Static / DHCP">
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn-netsible btn-secondary-n btn-sm"
-                        data-bs-dismiss="modal">Batal</button>
-                    <button type="submit" class="btn-netsible btn-success-n btn-sm">Simpan</button>
                 </div>
             </form>
         </div>
