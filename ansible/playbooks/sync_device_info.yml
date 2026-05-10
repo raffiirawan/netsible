@@ -1,0 +1,59 @@
+---
+# ============================================================
+# NETSIBLE — sync_device_info.yml
+# Sinkronisasi informasi device dari RouterOS ke database NETSIBLE.
+# Mengambil: model, serial number, MAC, version, uptime
+#
+# Input vars (dari Flask extra_vars):
+#   target_host  : IP address router   (wajib)
+#   device_name  : Nama device         (opsional, untuk debug)
+#
+# Usage:
+#   run_playbook('sync_device_info.yml',
+#                extra_vars={'target_host': '192.168.88.1'},
+#                dynamic_hosts=[...])
+# ============================================================
+
+- name: Sync Device Information from RouterOS
+  hosts: mikrotik_routers
+  gather_facts: no
+  connection: network_cli
+
+  tasks:
+
+    # ─── Ambil informasi sistem ──────────────────────────────
+    - name: Get system identity
+      community.routeros.command:
+        commands:
+          - /system identity print
+      register: sys_identity
+
+    - name: Get system resource (uptime, version, CPU, RAM)
+      community.routeros.command:
+        commands:
+          - /system resource print
+      register: sys_resource
+
+    - name: Get routerboard info (model, serial)
+      community.routeros.command:
+        commands:
+          - /system routerboard print
+      register: sys_routerboard
+      ignore_errors: yes
+
+    - name: Get first ethernet interface MAC address
+      community.routeros.command:
+        commands:
+          - /interface ethernet print detail where name=ether1
+      register: eth1_info
+      ignore_errors: yes
+
+    # ─── Output structured untuk Flask parsing ──────────────
+    - name: Output device sync data
+      debug:
+        msg:
+          host: "{{ ansible_host }}"
+          identity: "{{ sys_identity.stdout_lines }}"
+          resource: "{{ sys_resource.stdout_lines }}"
+          routerboard: "{{ sys_routerboard.stdout_lines | default([]) }}"
+          eth1: "{{ eth1_info.stdout_lines | default([]) }}"

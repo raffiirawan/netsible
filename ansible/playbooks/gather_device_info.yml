@@ -1,0 +1,81 @@
+---
+# ============================================================
+# NETSIBLE — gather_device_info.yml
+# Ambil informasi lengkap dari router Mikrotik:
+#   - System identity (nama router)
+#   - System resource (CPU, RAM, Disk, Uptime, Version)
+#   - Interface list (nama, status, MAC)
+#   - IP address list
+#
+# Usage via Flask:
+#   run_playbook('gather_device_info.yml',
+#                extra_vars={'target_host': '192.168.88.1'},
+#                dynamic_hosts=[{'name': 'R1', 'ip': '192.168.88.1', ...}])
+#
+# Output: Ansible debug tasks mencetak JSON ke stdout.
+#         Flask parsing stdout untuk ambil data.
+# ============================================================
+
+- name: Gather Complete Device Information
+  hosts: mikrotik_routers
+  gather_facts: no
+  connection: network_cli
+
+  vars:
+    target_host: "{{ ansible_host }}"
+
+  tasks:
+
+    # ─── System Identity ────────────────────────────────────
+    - name: Get system identity
+      community.routeros.command:
+        commands:
+          - /system identity print
+      register: identity_result
+
+    # ─── System Resource ────────────────────────────────────
+    - name: Get system resource
+      community.routeros.command:
+        commands:
+          - /system resource print
+      register: resource_result
+
+    # ─── RouterOS Version ───────────────────────────────────
+    - name: Get RouterOS version
+      community.routeros.command:
+        commands:
+          - /system package print
+      register: package_result
+
+    # ─── Interface List ─────────────────────────────────────
+    - name: Get interface list
+      community.routeros.command:
+        commands:
+          - /interface print detail
+      register: interface_result
+
+    # ─── IP Address List ────────────────────────────────────
+    - name: Get IP addresses
+      community.routeros.command:
+        commands:
+          - /ip address print detail
+      register: ip_result
+
+    # ─── Serial Number ──────────────────────────────────────
+    - name: Get system routerboard
+      community.routeros.command:
+        commands:
+          - /system routerboard print
+      register: routerboard_result
+      ignore_errors: yes  # some CHR/virtual routers don't have routerboard
+
+    # ─── Print collected data as structured output ──────────
+    - name: Display collected device info
+      debug:
+        msg:
+          host: "{{ ansible_host }}"
+          identity: "{{ identity_result.stdout_lines }}"
+          resource: "{{ resource_result.stdout_lines }}"
+          interfaces: "{{ interface_result.stdout_lines }}"
+          ip_addresses: "{{ ip_result.stdout_lines }}"
+          routerboard: "{{ routerboard_result.stdout_lines | default([]) }}"

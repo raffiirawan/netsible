@@ -5,5 +5,6 @@ Import all models here so they are registered with SQLAlchemy.
 from .user import User
 from .device import Device
 from .ip_address import IPAddress
+from .monitoring_history import MonitoringHistory
 
-__all__ = ['User', 'Device', 'IPAddress']
+__all__ = ['User', 'Device', 'IPAddress', 'MonitoringHistory']

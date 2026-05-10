@@ -1,0 +1,77 @@
+---
+# ============================================================
+# NETSIBLE — discover_devices.yml
+# Scan sebuah network range dan cari router Mikrotik
+# yang bisa di-reach via SSH (port 22) atau API (port 8728).
+#
+# Input vars:
+#   network_range   : CIDR range untuk di-scan  (default: 192.168.88.0/24)
+#   scan_port       : Port untuk dicek           (default: 22)
+#   timeout_seconds : Timeout per host           (default: 2)
+#
+# Output:
+#   List IP yang respond di scan_port dicetak sebagai debug JSON.
+#   Flask bisa parse stdout untuk list device kandidat.
+#
+# Catatan: Playbook ini membutuhkan module 'ansible.builtin.wait_for'
+#          dan dijalankan dari localhost (controller).
+# ============================================================
+
+- name: Discover Mikrotik Devices on Network
+  hosts: localhost
+  connection: local
+  gather_facts: no
+
+  vars:
+    network_range: "192.168.88.0/24"
+    scan_port: 22
+    timeout_seconds: 2
+    # Daftar IP yang akan di-scan (override jika tidak pakai range)
+    scan_targets: []
+
+  tasks:
+
+    # ─── Generate IP list dari CIDR ─────────────────────────
+    - name: Generate list of IPs from network range
+      ansible.builtin.set_fact:
+        ip_list: "{{ network_range | ansible.netcommon.cidr_merge | default([]) }}"
+      when: scan_targets | length == 0
+      ignore_errors: yes
+
+    - name: Use explicit scan targets if provided
+      ansible.builtin.set_fact:
+        ip_list: "{{ scan_targets }}"
+      when: scan_targets | length > 0
+
+    # ─── Scan setiap IP ─────────────────────────────────────
+    - name: Check SSH/API reachability for each IP
+      ansible.builtin.wait_for:
+        host: "{{ item }}"
+        port: "{{ scan_port }}"
+        timeout: "{{ timeout_seconds }}"
+        state: started
+      loop: "{{ ip_list | default([]) }}"
+      register: scan_results
+      ignore_errors: yes
+
+    # ─── Filter hanya yang berhasil ─────────────────────────
+    - name: Collect reachable hosts
+      ansible.builtin.set_fact:
+        reachable_hosts: >-
+          {{
+            scan_results.results
+            | selectattr('failed', 'equalto', false)
+            | map(attribute='item')
+            | list
+          }}
+      when: scan_results is defined
+
+    # ─── Output ─────────────────────────────────────────────
+    - name: Display discovered devices
+      debug:
+        msg:
+          network_range: "{{ network_range }}"
+          scan_port: "{{ scan_port }}"
+          total_scanned: "{{ ip_list | default([]) | length }}"
+          reachable_count: "{{ reachable_hosts | default([]) | length }}"
+          reachable_hosts: "{{ reachable_hosts | default([]) }}"
