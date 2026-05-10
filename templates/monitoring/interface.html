@@ -3,21 +3,27 @@
 
 {% block content %}
 <div class="page-header">
-    <h1>Tampilan Interface</h1>
+    <h1>Tampilan Interface — {{ device.name }}</h1>
+    <a href="{{ url_for('monitoring.detail', device_id=device.id) }}" class="btn-netsible btn-secondary-n btn-sm">
+        <i class="bi bi-arrow-left"></i> Kembali ke Monitoring
+    </a>
 </div>
 
 <div class="router-visual">
     <h3>MIKROTIK {{ device.model or 'RB750GR3' }}</h3>
 
-    <div class="router-chassis" id="router-chassis" data-device-id="{{ device.id }}">
-        <!-- WAN Port -->
+    <div class="router-chassis" id="router-chassis" data-device-id="{{ device.id }}" data-model="{{ device.model or 'RB750GR3' }}">
+        
+        {% set model = device.model or 'RB750GR3' %}
+        
+        {# RB750GR3 - 5 Ethernet Ports #}
+        {% if 'RB750' in model or 'hEX' in model %}
         <div class="port-group">
             <div class="port port-connected" id="port-wan">
                 <div class="port-slot"></div>
                 <div class="port-label">WAN</div>
             </div>
         </div>
-        <!-- Ethernet Ports -->
         <div class="port-group">
             <div class="port port-connected" id="port-ether1">
                 <div class="port-slot"></div>
@@ -40,6 +46,110 @@
                 <div class="port-label">Ether5</div>
             </div>
         </div>
+        {% if 'hEX S' in model %}
+        <div class="port-group">
+            <div class="port port-disconnected" id="port-sfp1">
+                <div class="port-slot"></div>
+                <div class="port-label">SFP1</div>
+            </div>
+        </div>
+        {% endif %}
+        
+        {# CCR1009 - 7 Gigabit + 1 SFP+ #}
+        {% elif 'CCR1009' in model %}
+        <div class="port-group">
+            <div class="port port-connected" id="port-wan">
+                <div class="port-slot"></div>
+                <div class="port-label">WAN</div>
+            </div>
+        </div>
+        <div class="port-group">
+            <div class="port port-connected" id="port-ether1">
+                <div class="port-slot"></div>
+                <div class="port-label">Ether1</div>
+            </div>
+            <div class="port port-connected" id="port-ether2">
+                <div class="port-slot"></div>
+                <div class="port-label">Ether2</div>
+            </div>
+            <div class="port port-connected" id="port-ether3">
+                <div class="port-slot"></div>
+                <div class="port-label">Ether3</div>
+            </div>
+            <div class="port port-disconnected" id="port-ether4">
+                <div class="port-slot"></div>
+                <div class="port-label">Ether4</div>
+            </div>
+            <div class="port port-disconnected" id="port-ether5">
+                <div class="port-slot"></div>
+                <div class="port-label">Ether5</div>
+            </div>
+            <div class="port port-disconnected" id="port-ether6">
+                <div class="port-slot"></div>
+                <div class="port-label">Ether6</div>
+            </div>
+            <div class="port port-disconnected" id="port-ether7">
+                <div class="port-slot"></div>
+                <div class="port-label">Ether7</div>
+            </div>
+        </div>
+        <div class="port-group">
+            <div class="port port-disconnected" id="port-sfp-sfpplus1">
+                <div class="port-slot"></div>
+                <div class="port-label">SFP+1</div>
+            </div>
+        </div>
+        
+        {# cAP ac - Wireless AP #}
+        {% elif 'cAP' in model or 'AP' in model %}
+        <div class="port-group">
+            <div class="port port-connected" id="port-ether1">
+                <div class="port-slot"></div>
+                <div class="port-label">PoE In</div>
+            </div>
+        </div>
+        <div class="port-group">
+            <div class="port port-connected" id="port-wlan1">
+                <div class="port-slot" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);"></div>
+                <div class="port-label">WLAN1 (2.4GHz)</div>
+            </div>
+            <div class="port port-connected" id="port-wlan2">
+                <div class="port-slot" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);"></div>
+                <div class="port-label">WLAN2 (5GHz)</div>
+            </div>
+        </div>
+        
+        {# Default - Generic Router #}
+        {% else %}
+        <div class="port-group">
+            <div class="port port-connected" id="port-wan">
+                <div class="port-slot"></div>
+                <div class="port-label">WAN</div>
+            </div>
+        </div>
+        <div class="port-group">
+            <div class="port port-connected" id="port-ether1">
+                <div class="port-slot"></div>
+                <div class="port-label">Ether1</div>
+            </div>
+            <div class="port port-connected" id="port-ether2">
+                <div class="port-slot"></div>
+                <div class="port-label">Ether2</div>
+            </div>
+            <div class="port port-disabled" id="port-ether3">
+                <div class="port-slot"></div>
+                <div class="port-label">Ether3</div>
+            </div>
+            <div class="port port-disconnected" id="port-ether4">
+                <div class="port-slot"></div>
+                <div class="port-label">Ether4</div>
+            </div>
+            <div class="port port-disconnected" id="port-ether5">
+                <div class="port-slot"></div>
+                <div class="port-label">Ether5</div>
+            </div>
+        </div>
+        {% endif %}
     </div>
 
     <!-- Legend -->
@@ -49,10 +159,34 @@
         <span><div class="legend-dot disconnected"></div> Disconnected</span>
     </div>
 
+    <!-- Device Info -->
+    <div style="margin-top: 20px; padding: 15px; background: var(--card-bg); border-radius: 8px; border: 1px solid var(--border-color);">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+            <div>
+                <div style="color: var(--text-muted); font-size: 12px; margin-bottom: 4px;">IP Address</div>
+                <div style="font-weight: 600;">{{ device.ip_address }}</div>
+            </div>
+            <div>
+                <div style="color: var(--text-muted); font-size: 12px; margin-bottom: 4px;">Model</div>
+                <div style="font-weight: 600;">{{ device.model or 'Unknown' }}</div>
+            </div>
+            <div>
+                <div style="color: var(--text-muted); font-size: 12px; margin-bottom: 4px;">Serial Number</div>
+                <div style="font-weight: 600;">{{ device.serial_number or 'N/A' }}</div>
+            </div>
+            <div>
+                <div style="color: var(--text-muted); font-size: 12px; margin-bottom: 4px;">Status</div>
+                <div>
+                    <span class="badge-status badge-{{ device.status }}">{{ device.status | capitalize }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Refresh Button -->
     <div style="margin-top:28px">
         <button class="btn-netsible btn-secondary-n" id="btn-refresh-ports">
-            <i class="bi bi-arrow-clockwise"></i> Refresh
+            <i class="bi bi-arrow-clockwise"></i> Refresh Status
         </button>
     </div>
 </div>

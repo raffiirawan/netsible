@@ -58,28 +58,32 @@ def _seed_demo_data(app):
     admin.set_password('admin123')
     db.session.add(admin)
 
-    # Demo devices
+    # Demo devices - berbagai model untuk testing interface visualization
     devices_data = [
-        {'name': 'Mikrotik 1', 'ip_address': '192.168.100.1', 'interface': 'ether1',
-         'model': 'CHRv7', 'serial_number': 'HBW08RLT3V0',
+        {'name': 'Router-Gateway', 'ip_address': '192.168.100.1', 'interface': 'ether1',
+         'model': 'RB750GR3', 'serial_number': 'HBW08RLT3V0',
          'mac_address': 'E4:8D:8C:26:A0:01', 'routeros_version': '7.15.2',
          'status': 'online', 'uptime': '10d 4h 30m'},
-        {'name': 'Mikrotik 2', 'ip_address': '192.168.100.2', 'interface': 'ether1',
-         'model': 'CHRv8', 'serial_number': 'CC3D0BFE1234',
+        {'name': 'Router-Branch1', 'ip_address': '192.168.100.2', 'interface': 'ether1',
+         'model': 'hEX S', 'serial_number': 'CC3D0BFE1234',
          'mac_address': 'E4:8D:8C:26:B0:02', 'routeros_version': '7.14.3',
          'status': 'online', 'uptime': '5d 12h 15m'},
         {'name': 'Router-Branch2', 'ip_address': '192.168.88.3', 'interface': 'ether1',
          'model': 'hEX S', 'serial_number': 'ABC123DEF456',
          'mac_address': 'E4:8D:8C:26:C0:03', 'routeros_version': '7.15.2',
          'status': 'offline', 'uptime': ''},
-        {'name': 'Router-Lab', 'ip_address': '192.168.100.1', 'interface': 'ether1',
-         'model': 'CCR1009-7G', 'serial_number': 'HBW09XYZ5678',
+        {'name': 'Router-Core', 'ip_address': '192.168.100.10', 'interface': 'ether1',
+         'model': 'CCR1009-7G-1C-1S+', 'serial_number': 'HBW09XYZ5678',
          'mac_address': 'E4:8D:8C:26:D0:04', 'routeros_version': '7.13.5',
          'status': 'online', 'uptime': '30d 2h 10m'},
         {'name': 'AP-Office', 'ip_address': '192.168.88.5', 'interface': 'wlan1',
          'model': 'cAP ac', 'serial_number': 'WAP00112233',
          'mac_address': 'E4:8D:8C:26:E0:05', 'routeros_version': '7.15.2',
          'status': 'online', 'uptime': '15d 8h 45m'},
+        {'name': 'Router-Lab', 'ip_address': '192.168.88.20', 'interface': 'ether1',
+         'model': 'RB750GR3', 'serial_number': 'LAB001XYZ789',
+         'mac_address': 'E4:8D:8C:26:F0:06', 'routeros_version': '7.15.2',
+         'status': 'online', 'uptime': '2d 8h 15m'},
     ]
     devices = []
     for dd in devices_data:
